@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parole! — итальянские слова играя</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf3e4;--card:#fffaf0;--ink:#2b2118;--mut:#7a6a58;--red:#d6402b;--green:#2f8f4e;--gold:#e8a317;--line:#ecdcc0;--ok:#d9f2df;--bad:#fbdad4;--sh:0 6px 0 #ecdcc0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1712;--card:#271f18;--ink:#f6ead6;--mut:#b5a48c;--line:#3b3025;--ok:#1f4029;--bad:#4a231d;--sh:0 6px 0 #3b3025}}
+:root[data-theme="dark"]{--bg:#1c1712;--card:#271f18;--ink:#f6ead6;--mut:#b5a48c;--line:#3b3025;--ok:#1f4029;--bad:#4a231d;--sh:0 6px 0 #3b3025}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:700;min-height:100vh;
+background-image:linear-gradient(90deg,var(--green) 0 33.3%,transparent 33.3% 66.6%,var(--red) 66.6%);background-size:100% 8px;background-repeat:no-repeat}
+.wrap{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:900;font-size:34px;margin:0;color:var(--red);letter-spacing:-1px}
+h1 small{display:block;font-family:Nunito,sans-serif;font-size:13px;color:var(--mut);letter-spacing:0;font-weight:700}
+.stats{display:flex;gap:8px}
+.pill{background:var(--card);border:2px solid var(--line);border-radius:99px;padding:6px 12px;font-size:14px;white-space:nowrap}
+.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--red));width:0;transition:width .4s}
+.chips,.modes{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px}
+.chip{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.blocks{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:2px}.blk{flex:none;width:104px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 4px;font:inherit;font-size:12px;cursor:pointer;box-shadow:var(--sh);line-height:1.2}.blk b{display:block;font-size:24px}.blk small{display:block;color:var(--mut);margin-top:3px}.blk.on{border-color:var(--red);color:var(--red)}.tabs{display:flex;background:var(--line);border-radius:14px;padding:4px;margin:14px 0 4px}.tab{flex:1;border:0;background:none;color:var(--mut);border-radius:11px;padding:10px;font:inherit;font-size:15px;cursor:pointer}.tab.on{background:var(--card);color:var(--red);box-shadow:0 2px 0 var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;opacity:0;transition:.3s;max-width:90%;text-align:center;pointer-events:none;z-index:9}.toast.on{opacity:1;transform:translate(-50%,0)}
+.h2{font-family:'Playfair Display',Georgia,serif;text-align:center;margin:28px 0 8px;font-size:26px}
+.road{position:relative;padding:4px 0}.road::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:4px dashed var(--line);transform:translateX(-2px)}
+.sec{position:relative;text-align:center;margin:18px auto 6px;background:var(--ink);color:var(--bg);width:max-content;max-width:90%;padding:6px 16px;border-radius:99px;font-size:14px}
+.stop{position:relative;display:flex;align-items:center;gap:12px;width:78%;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;text-align:left;margin:14px 0;padding:0}
+.stop.r{margin-left:auto;flex-direction:row-reverse;text-align:right}
+.node{flex:none;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:28px;background:var(--card);border:4px solid var(--line);box-shadow:var(--sh)}
+.node.s1,.node.s2{border-color:var(--gold)}.node.s3{border-color:var(--green);background:var(--ok)}
+.stop small{color:var(--mut)}.stars{color:var(--gold);letter-spacing:2px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.bd{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;font-size:14px;opacity:.55}.bd.on{opacity:1;border-color:var(--gold)}.bd b{display:block;font-size:34px}.bd small{display:block;color:var(--mut);font-weight:700;font-size:12px}
+.inp{width:100%;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:14px;font:inherit;font-size:22px;text-align:center;margin-top:12px;outline:none}.inp:focus{border-color:var(--red)}
+.emos{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:12px 0}.emo{font-size:26px;border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:4px 8px;cursor:pointer}.emo.on{border-color:var(--red);background:var(--bad)}
+.kb{display:flex;gap:6px;justify-content:center;margin-top:10px}.kb button{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:6px 12px;font:inherit;font-size:18px;cursor:pointer}
+.err{color:var(--red);min-height:22px;margin-top:8px}.lnk{background:none;border:0;color:var(--mut);font:inherit;text-decoration:underline;cursor:pointer;margin-top:10px}
+.modes{margin:6px 0 14px}
+.mode{flex:1;min-width:110px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:12px 8px;font:inherit;cursor:pointer;box-shadow:var(--sh);text-align:center}
+.mode b{display:block;font-size:22px}.mode.on{border-color:var(--red);color:var(--red)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;box-shadow:var(--sh);padding:28px 20px;text-align:center}
+.flip{min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;user-select:none}
+.big{font-family:'Playfair Display',Georgia,serif;font-size:clamp(34px,9vw,52px);font-weight:900;word-break:break-word}
+.tag{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--mut);margin-bottom:12px}
+.hint{color:var(--mut);font-size:14px;margin-top:14px}
+.row{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;border:0;border-radius:16px;padding:14px;font:inherit;font-size:16px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.g{background:var(--green)}.r{background:var(--red)}.d{background:var(--gold);color:#2b2118}
+.opts{display:grid;gap:10px;margin-top:18px}
+.opt{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:16px;padding:14px;font:inherit;font-size:17px;cursor:pointer;box-shadow:0 4px 0 var(--line)}
+.opt.ok{background:var(--ok);border-color:var(--green)}.opt.no{background:var(--bad);border-color:var(--red)}
+.slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:56px;margin:16px 0}
+.slot{width:42px;height:50px;border-bottom:4px solid var(--line);font-size:26px;font-family:'Playfair Display',serif;font-weight:900;display:flex;align-items:center;justify-content:center}
+.letters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.let{width:48px;height:52px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;font:inherit;font-size:24px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--line)}
+.let:disabled{opacity:.25}
+.fb{min-height:26px;margin-top:12px;font-size:17px}
+.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.end{font-size:56px}
+.top{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;margin-bottom:10px}
+.theme{background:none;border:0;font-size:20px;cursor:pointer}
+</style></head><body><div class="wrap">
+<header><h1>Parole!<small>Nuovissimo Progetto italiano 1</small></h1>
+<div class="stats"><button class="pill" id="mp" hidden>🗺️ Путь</button><button class="pill" id="who" hidden title="Сменить аккаунт"></button><span class="pill" id="lv"></span><span class="pill" id="st"></span><button class="theme" id="th" aria-label="Тема">🌗</button></div></header>
+<div id="main" hidden><div class="bar"><i id="xb"></i></div>
+<div class="blocks" id="blocks"></div>
+<div class="chips" id="chips"></div>
+<div class="modes" id="modes"></div></div>
+<div id="app"></div><div id="toast" class="toast"></div></div>
+<script>
+const U=[
+["0","🔤","Benvenuti!",{
+pres:["👋 Знакомство","Ciao!=Привет! / Пока!;Buongiorno!=Доброе утро!;Buonasera!=Добрый вечер!;Arrivederci!=До свидания!;Mi chiamo…=Меня зовут…;Come ti chiami?=Как тебя зовут?;Piacere!=Очень приятно!;Quanti anni hai?=Сколько тебе лет?;Di dove sei?=Откуда ты?;Come stai?=Как дела?;Grazie!=Спасибо!;Prego!=Пожалуйста!"],
+naz:["🌍 Национальности","italiano=итальянец;americano=американец;inglese=англичанин;spagnolo=испанец;francese=француз;tedesco=немец;russo=русский;brasiliano=бразилец;argentino=аргентинец;australiano=австралиец;straniero=иностранец"],
+num:["🔢 Числа 1–30","uno=один;due=два;tre=три;quattro=четыре;cinque=пять;sei=шесть;sette=семь;otto=восемь;nove=девять;dieci=десять;undici=одиннадцать;dodici=двенадцать;venti=двадцать;trenta=тридцать"],
+par:["🍕 Знакомые слова","cappuccino=капучино;pizza=пицца;gelato=мороженое;gondola=гондола;chitarra=гитара;museo=музей;giornale=газета;lingua=язык;pagina=страница;gatto=кот;chiave=ключ;finestra=окно;lezione=урок;studente=студент;ragazzo=парень;ragazza=девушка"]}],
+["1","🏠","Un nuovo inizio",{
+verbi:["🏃 Глаголы I–III спряжения","guardare=смотреть;ascoltare=слушать;abitare=проживать;lavorare=работать;parlare=говорить;scrivere=писать;leggere=читать;prendere=брать;aprire=открывать;partire=уезжать;finire=заканчивать;capire=понимать;preferire=предпочитать;spedire=отправлять;pulire=убирать;costruire=строить;offrire=предлагать;cucinare=готовить;arrivare=прибывать"],
+asp:["🙂 Внешность и характер","alto=высокий;basso=низкий;biondo=светловолосый;moro=темноволосый;bello=красивый;giovane=молодой;simpatico=симпатичный;intelligente=умный;interessante=интересный;gentile=любезный;timido=застенчивый;allegro=весёлый;pigro=ленивый;grasso=толстый;magro=худой"],
+viso:["👁️ Лицо","viso=лицо;occhio=глаз;naso=нос;bocca=рот;orecchio=ухо;capelli=волосы;fronte=лоб;labbro=губа;dente=зуб;guancia=щека;barba=борода;baffi=усы"],
+tel:["📞 Телефон и новости","Pronto?=Алло?;novità=новость;collega=коллега;amico=друг;lavoro=работа;città=город;sono contenta=я рада;Lei=Вы;Di dov’è?=Откуда Вы?;Come sta?=Как Вы поживаете?;Ciao Maria!=Привет, Мария!;un nuovo inizio=новое начало"],
+geo:["🗺️ Италия","regione=область;nord=север;sud=юг;centro=центр;isola=остров;mare=море;montagna=гора;lago=озеро;capitale=столица;confine=граница;vulcano=вулкан;fiume=река"]}],
+["2","⚽","Tempo libero",{
+free:["🎾 Свободное время","giocare=играть;nuotare=плавать;ballare=танцевать;cinema=кино;teatro=театр;concerto=концерт;mostra=выставка;palestra=спортзал;passeggiata=прогулка;gita=поездка;sport=спорт;calcio=футбол;musica=музыка;uscire=выходить;fare una gita=съездить на экскурсию"],
+inv:["💌 Приглашения","Vieni con noi?=Пойдёшь с нами?;Che ne dici di…?=Как насчёт…?;D’accordo.=Договорились.;Ottima idea!=Отличная идея!;Perché no?=Почему бы и нет?;Purtroppo no.=К сожалению, нет.;Mi dispiace.=Мне жаль.;Con piacere!=С удовольствием!;Volentieri!=Охотно!;Posso entrare?=Можно войти?"],
+casa:["🏠 Жильё","indirizzo=адрес;via=улица;piano=этаж;affitto=аренда;appartamento=квартира;camera=комната;cucina=кухня;bagno=ванная;ascensore=лифт;soggiorno=гостиная;balcone=балкон;periferia=окраина;in centro=в центре"],
+ora:["⏰ Дни и время","lunedì=понедельник;martedì=вторник;mercoledì=среда;giovedì=четверг;venerdì=пятница;sabato=суббота;domenica=воскресенье;mezzogiorno=полдень;mezzanotte=полночь;mattina=утро;pomeriggio=день;sera=вечер;notte=ночь;Che ore sono?=Который час?"],
+mezzi:["🚌 Транспорт","autobus=автобус;metro=метро;tram=трамвай;treno=поезд;aereo=самолёт;macchina=машина;bicicletta=велосипед;motorino=мопед;taxi=такси;a piedi=пешком;fermata=остановка"],
+num:["🔢 Числа 30–2000","quaranta=сорок;cinquanta=пятьдесят;sessanta=шестьдесят;settanta=семьдесят;ottanta=восемьдесят;novanta=девяносто;cento=сто;duecento=двести;mille=тысяча;duemila=две тысячи;primo=первый;secondo=второй;terzo=третий;quarto=четвёртый;quinto=пятый"]}],
+["3","📱","In contatto",{
+com:["📱 Связь","cellulare=мобильный телефон;email=электронная почта;messaggio=сообщение;telefonata=звонок;videochiamata=видеозвонок;social=соцсети;computer=компьютер;sito=сайт;mandare=отправлять;chiamare=звонить;rispondere=отвечать;lettera=письмо;busta=конверт;francobollo=марка"],
+ora:["🕘 Время работы","aperto=открыто;chiuso=закрыто;apertura=открытие;chiusura=закрытие;ufficio=офис;negozio=магазин;orario=расписание;forse=возможно;magari=может быть;penso=думаю;non so=не знаю;probabilmente=вероятно;non sono sicuro=я не уверен"],
+luogo:["📍 Где находится","sopra=над, на;sotto=под;davanti=перед;dietro=за;vicino=рядом;lontano=далеко;a destra=справа;a sinistra=слева;accanto=рядом с;tra=между;dentro=внутри;fuori=снаружи"],
+grazie:["🙏 Благодарность","Grazie mille!=Большое спасибо!;Di niente.=Не за что.;Figurati!=Не за что!;Non c’è di che.=Не стоит благодарности.;Molto gentile.=Очень любезно.;Prego.=Пожалуйста."],
+mesi:["🗓️ Месяцы и сезоны","gennaio=январь;febbraio=февраль;marzo=март;aprile=апрель;maggio=май;giugno=июнь;luglio=июль;agosto=август;settembre=сентябрь;ottobre=октябрь;novembre=ноябрь;dicembre=декабрь;primavera=весна;estate=лето;autunno=осень;inverno=зима"],
+prezzo:["💶 Цены","prezzo=цена;costare=стоить;caro=дорогой;economico=дешёвый;sconto=скидка;in contanti=наличными;carta di credito=кредитная карта;scontrino=чек;spendere=тратить;pagare=платить;euro=евро"]}],
+["4","🥐","Buon fine settimana!",{
+we:["🎭 Выходные","festa=праздник;mostra=выставка;gita=поездка;pizzeria=пиццерия;giro=прогулка;riposarsi=отдыхать;divertirsi=веселиться;dormire=спать;incontrare=встречать;visitare=посещать;traffico=пробки;fare spese=ходить за покупками"],
+pass:["⏪ Прошедшее время","ieri=вчера;ieri sera=вчера вечером;scorso=прошлый;la settimana scorsa=на прошлой неделе;due giorni fa=два дня назад;già=уже;appena=только что;mai=никогда;ancora=ещё;sempre=всегда;prima=сначала;dopo=потом;poi=затем"],
+data:["📅 Даты","data=дата;compleanno=день рождения;anno=год;mese=месяц;settimana=неделя;giorno=день;oggi=сегодня;domani=завтра;dopodomani=послезавтра;il mese prossimo=в следующем месяце;fra una settimana=через неделю"],
+bar:["☕ В баре","caffè=кофе;espresso=эспрессо;ristretto=ристретто;macchiato=макьято;lungo=лунго;decaffeinato=без кофеина;cappuccino=капучино;spremuta=сок;panino=бутерброд;tramezzino=сэндвич;cornetto=круассан;gelato=мороженое;lattina=банка;fame=голод;sete=жажда;Per me, un panino.=Мне — бутерброд.;il conto=счёт"]}],
+["5","🏔️","Tempo di vacanze",{
+feste:["🎄 Праздники","Natale=Рождество;Capodanno=Новый год;Befana=Бефана;Carnevale=карнавал;Pasqua=Пасха;Ferragosto=Феррагосто;albero di Natale=ёлка;regalo=подарок;auguri=поздравления;panettone=панеттоне;cenone=праздничный ужин"],
+treno:["🚆 На поезде","biglietto=билет;binario=путь, платформа;stazione=вокзал;carrozza=вагон;controllore=контролёр;prima classe=первый класс;biglietteria=касса;solo andata=в один конец;andata e ritorno=туда и обратно;partenza=отправление;arrivo=прибытие;ritardo=опоздание;prenotare=бронировать;Freccia=«Стрела»;bagaglio=багаж"],
+meteo:["⛅ Погода","temporale=гроза;nuvoloso=облачно;sereno=ясно;pioggia=дождь;neve=снег;vento=ветер;nebbia=туман;caldo=жарко;freddo=холодно;temperatura=температура;piove=идёт дождь;nevica=идёт снег;Che tempo farà?=Какая будет погода?"],
+mont:["⛰️ Отдых","montagna=гора;mare=море;lago=озеро;spiaggia=пляж;sci=лыжи;zaino=рюкзак;rifugio=горный приют;vacanza=отпуск;albergo=гостиница;escursione=поход;tenda=палатка;sole=солнце"]}],
+["6","🍝","A cena fuori",{
+fam:["👪 Семья","padre=отец;madre=мать;nonno=дедушка;nonna=бабушка;zio=дядя;zia=тётя;cugino=двоюродный брат;cugina=двоюродная сестра;nipote=внук, племянник;fratello=брат;sorella=сестра;figlio=сын;figlia=дочь;marito=муж;moglie=жена;genitori=родители"],
+menu:["📜 Меню","antipasto=закуска;primo=первое блюдо;secondo=второе блюдо;contorno=гарнир;dolce=десерт;da bere=напитки;lasagne=лазанья;spaghetti=спагетти;risotto=ризотто;tiramisù=тирамису;bistecca=стейк;cotoletta=котлета;cameriere=официант;tavolo=стол;Vorrei…=Я бы хотел…;Mi piace…=Мне нравится…"],
+pasti:["🍽️ Приёмы пищи","colazione=завтрак;pranzo=обед;cena=ужин;spuntino=перекус;merenda=полдник;aperitivo=аперитив;Buon appetito!=Приятного аппетита!;Ho fame.=Я голоден.;Quanto tempo ci vuole?=Сколько нужно времени?"],
+cuc:["🍳 Кухня","tagliare=резать;bollire=варить;friggere=жарить;cuocere=готовить;mescolare=мешать;aggiungere=добавлять;grattugiare=тереть;sbucciare=чистить;forchetta=вилка;coltello=нож;cucchiaio=ложка;piatto=тарелка;bicchiere=стакан;pentola=кастрюля;padella=сковорода;tazza=чашка"],
+aug:["🎂 Праздничные фразы","Buon compleanno!=С днём рождения!;Auguri!=Поздравляю!;Cin cin!=За здоровье!;Che bel regalo!=Какой красивый подарок!;Faresti bene a…=Тебе стоит…;Al posto tuo…=На твоём месте…"]}],
+["7","🎬","Al cinema",{
+cin:["🎞️ Кино","film=фильм;regista=режиссёр;attore=актёр;attrice=актриса;trama=сюжет;scena=сцена;commedia=комедия;giallo=детектив;horror=ужастик;fantascienza=фантастика;sottotitoli=субтитры;sala=зал;schermo=экран;spettatore=зритель;premio=премия;protagonista=главный герой"],
+ric:["💭 Воспоминания","ricordare=помнить;ricordarsi=вспоминать;dimenticare=забывать;Ti ricordi?=Ты помнишь?;da bambino=в детстве;una volta=однажды;C’era una volta…=Жил-был…;all’inizio=сначала;alla fine=в конце;dopo un po’=через некоторое время;così=так"],
+acc:["🤝 Согласие","Sono d’accordo.=Я согласен.;Hai ragione!=Ты прав!;Hai torto.=Ты неправ.;Non è vero!=Это неправда!;Secondo me…=По-моему…;Non lo so…=Не знаю…;Certo!=Конечно!;Che ridere!=Как смешно!;Mah…=Ну…"]}],
+["8","🛒","Fare la spesa",{
+sup:["🛒 Супермаркет","supermercato=супермаркет;carrello=тележка;cassa=касса;scontrino=чек;offerta=акция;lista della spesa=список покупок;etto=100 граммов;chilo=килограмм;pacco=пачка;scatoletta=консервная банка;vasetto=баночка;bottiglia=бутылка;sacchetto=пакет"],
+prod:["🥫 Продукты","farina=мука;zucchero=сахар;sale=соль;olio=масло;pasta=макароны;riso=рис;burro=сливочное масло;formaggio=сыр;prosciutto=ветчина;pane=хлеб;uova=яйца;latte=молоко;mela=яблоко;pomodoro=помидор;patata=картофель;carota=морковь;cipolla=лук;aglio=чеснок;limone=лимон;arancia=апельсин"],
+neg:["🏪 Магазины","panetteria=булочная;macelleria=мясная лавка;pescheria=рыбная лавка;fruttivendolo=зеленщик;salumeria=гастроном;pasticceria=кондитерская;gelateria=мороженое-кафе;farmacia=аптека;tabaccheria=табачная лавка;mercato=рынок;edicola=газетный киоск;libreria=книжный магазин"],
+aiu:["🤝 Помощь и эмоции","Ti posso aiutare?=Могу помочь?;Mi puoi aiutare?=Ты можешь мне помочь?;Ho bisogno del tuo aiuto.=Мне нужна твоя помощь.;Che bello!=Как здорово!;Peccato!=Жаль!;Che sfortuna!=Какое невезение!;Quanto ne vuole?=Сколько Вам?;Che cosa desidera?=Что желаете?;Ce l’ho.=У меня есть.;Non ce l’ho!=У меня нет!"]}],
+["9","👗","Andiamo a fare spese",{
+abb:["👕 Одежда","maglietta=футболка;camicia=рубашка;pantaloni=брюки;jeans=джинсы;gonna=юбка;vestito=платье;giacca=куртка;cappotto=пальто;sciarpa=шарф;scarpe=обувь;calze=носки;cappello=шапка;cintura=ремень;borsa=сумка;felpa=толстовка;maglione=свитер;stivali=сапоги"],
+col:["🎨 Цвета","rosso=красный;blu=синий;verde=зелёный;giallo=жёлтый;bianco=белый;nero=чёрный;grigio=серый;rosa=розовый;arancione=оранжевый;azzurro=голубой;marrone=коричневый;viola=фиолетовый"],
+neg:["🏷️ В магазине","taglia=размер одежды;numero=размер обуви;camerino=примерочная;provare=примерять;saldi=распродажа;sconto=скидка;resto=сдача;Che taglia porti?=Какой у тебя размер?;Che numero porta?=Какой у Вас размер обуви?;La posso provare?=Можно примерить?;Si può pagare in contanti?=Можно платить наличными?;Mi sta bene.=Мне идёт."],
+rifl:["🌅 Рефлексивные глаголы","svegliarsi=просыпаться;alzarsi=вставать;lavarsi=умываться;vestirsi=одеваться;pettinarsi=причёсываться;mettersi=надевать;sentirsi=чувствовать себя;divertirsi=веселиться;arrabbiarsi=сердиться;addormentarsi=засыпать;riposarsi=отдыхать;rilassarsi=расслабляться;sposarsi=жениться;incontrarsi=встречаться;innamorarsi=влюбляться"]}],
+["10","📺","Che c’è stasera in TV?",{
+tv:["📺 Телевидение","programma=программа;canale=канал;telegiornale=новости;notizie=новости;fiction=сериал;documentario=документальный фильм;quiz=викторина;cartone animato=мультфильм;puntata=серия;trasmissione=передача;abbonamento=абонемент;telecomando=пульт;in onda=в эфире;rivista=журнал;stampa=пресса"],
+fav:["🙏 Просьбы и мнения","Mi dai una mano?=Поможешь?;Mi presti…?=Одолжишь мне…?;Puoi farmi un favore?=Можешь сделать мне одолжение?;Mi dispiace.=Мне жаль.;Mi pare giusto.=По-моему, справедливо.;Mi sembra…=Мне кажется…;Volentieri!=Охотно!"],
+imp:["❗ Императив","Dimmi!=Скажи мне!;Dammi!=Дай мне!;Fammi vedere!=Покажи мне!;Prendilo pure!=Бери!;Aspetta!=Подожди!;Senti!=Слушай!;Dai!=Давай!;Non preoccuparti!=Не волнуйся!;Vieni qui!=Иди сюда!;Siediti!=Садись!"],
+dir:["🧭 Дорога","Gira a destra.=Поверните направо.;Gira a sinistra.=Поверните налево.;Vai dritto.=Идите прямо.;Attraversa la strada.=Перейдите улицу.;semaforo=светофор;incrocio=перекрёсток;angolo=угол;rotonda=круг;ponte=мост;la prima a destra=первая справа;la seconda a sinistra=вторая слева"]}],
+["11","🎵","A ritmo di musica",{
+mus:["🎵 Музыка","cantante=певец;canzone=песня;concerto=концерт;gruppo=группа;pianoforte=пианино;violino=скрипка;batteria=ударные;microfono=микрофон;palco=сцена;testo=текст;album=альбом;spettacolo=шоу;orchestra=оркестр;suonare=играть (на инструменте);cantare=петь;ballare=танцевать"],
+cond:["🌈 Желания и советы","Vorrei…=Я хотел бы…;Mi piacerebbe…=Мне бы хотелось…;Potrebbe dirmi…?=Не могли бы Вы сказать…?;Faresti bene a…=Тебе стоит…;Dovresti…=Тебе следовало бы…;Sarebbe bello…=Было бы здорово…;Ti consiglio di…=Советую тебе…"],
+verbi:["🏃 Глаголы юнита","accompagnare=провожать;grattugiare=тереть;sposarsi=жениться;iniziare=начинать;mandare=отправлять;iscriversi=записываться;calmarsi=успокаиваться;dedicarsi=посвящать себя;prendersi cura=заботиться;cadere=падать;tradurre=переводить;stare=находиться"]}]];
+const BL={},SUB={},W=[];
+U.forEach(u=>{BL[u[0]]=[u[1],"Юнит "+u[0]+" · "+u[2],"слово"];SUB[u[0]]={};Object.keys(u[3]).forEach(k=>{const[l,str]=u[3][k];SUB[u[0]][k]=l;str.split(";").forEach(p=>{const i=p.indexOf("=");W.push([p.slice(0,i).trim(),p.slice(i+1).trim(),u[0],k])})})});
+let blk="0",sub="all",mode="cards",xp=0,learned=new Set(),cur=null,accs=[],earned=new Set();
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null}
+try{accs=JSON.parse(ls("p_accs")||"[]")}catch(e){}
+const EM=["🦊","🐱","🐼","🦁","🐸","🦄","🐙","🍕"];
+const hsh=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(36)};
+const $=id=>document.getElementById(id);
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const blockW=()=>W.filter(w=>w[2]==blk);const pool=()=>blockW().filter(w=>sub=="all"||w[3]==sub);
+const STOPS=[];Object.keys(SUB).forEach(b=>Object.keys(SUB[b]).forEach(k=>STOPS.push([b,k])));
+const CITY="Milano,Torino,Genova,Venezia,Verona,Bologna,Firenze,Pisa,Siena,Perugia,Assisi,Roma,Napoli,Pompei,Capri,Amalfi,Bari,Lecce,Matera,Palermo,Taormina,Siracusa,Cagliari,Sassari,Trieste,Trento,Bergamo,Como,Padova,Parma,Modena,Ravenna,Rimini,Ancona,Urbino,Orvieto,Lucca,Salerno,Catania,Cremona,Mantova,Aosta,Ferrara,Brindisi".split(",");
+const RANK=["Turista","Studente","Viaggiatore","Esploratore","Cittadino","Maestro","Leggenda"];
+const lvl=()=>Math.floor(xp/100)+1;
+function stars(b,k){const t=W.filter(w=>w[2]==b&&w[3]==k),l=t.filter(w=>learned.has(w[0])).length,p=l/t.length;return{l,n:t.length,st:p>=.9?3:p>=.6?2:p>=.3?1:0}}
+const tst=()=>STOPS.reduce((a,x)=>a+stars(x[0],x[1]).st,0);
+const blk2=b=>Object.keys(SUB[b]).every(k=>stars(b,k).st>=2);
+const BD=[["first","🌱","Primo passo","Выучи первое слово",5,()=>learned.size>=1],
+["w10","🍕","Antipasto","10 выученных слов",10,()=>learned.size>=10],
+["w50","🍝","Primo piatto","50 слов",20,()=>learned.size>=50],
+["w100","🍨","Dolce vita","100 слов",30,()=>learned.size>=100],
+["w250","🏛️","Colosseo","250 слов",50,()=>learned.size>=250],
+["w400","👑","Maestro","90% всех слов",100,()=>learned.size>=W.length*.9],
+["l3","⭐","Livello 3","Достигни 3 уровня",10,()=>lvl()>=3],
+["l5","🌟","Livello 5","Достигни 5 уровня",20,()=>lvl()>=5],
+["l10","💫","Livello 10","Достигни 10 уровня",50,()=>lvl()>=10],
+["s1","🗺️","В путь!","Первая звезда на карте",5,()=>tst()>=1],
+["s10","🧭","Путешественник","10 звёзд",20,()=>tst()>=10],
+["s30","🚂","Экспресс","30 звёзд",40,()=>tst()>=30],
+["s60","✈️","Рейс в Италию","60 звёзд",80,()=>tst()>=60],
+["p3","🥇","Perfetto","3 звезды в любой остановке",15,()=>STOPS.some(x=>stars(x[0],x[1]).st==3)],
+["p0","🎓","Юнит 0 пройден","Все остановки юнита 0 на 2★+",40,()=>blk2("0")]];
+for(let i=1;i<=11;i++)BD.push(["u"+i,"🎓","Юнит "+i+" пройден","Все остановки юнита "+i+" на 2★+",40,()=>blk2(""+i)]);;
+function toast(t){let e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),3500)}
+function save(){if(cur){const nb=BD.filter(b=>!earned.has(b[0])&&b[5]());let bo=0;nb.forEach(b=>{earned.add(b[0]);xp+=b[4];bo+=b[4]});
+ls("p_d_"+cur.n,JSON.stringify({xp,l:[...learned],b:[...earned]}));
+if(nb.length)toast("🏅 Награда: "+nb.map(b=>b[1]+" "+b[2]).join(", ")+" · +"+bo+" XP")}head()}
+function mapView(){$("main").hidden=true;
+let n=0,sec="",h="";
+STOPS.forEach(x=>{const[b,k]=x,r=stars(b,k);
+if(b!=sec){sec=b;h+=`<div class="sec">${BL[b][0]} ${BL[b][1]}</div>`}
+h+=`<button class="stop ${n%2?"r":"l"}" data-b="${b}" data-k="${k}"><span class="node s${r.st}">${SUB[b][k].split(" ")[0]}</span><span><b>${CITY[n%CITY.length]}</b><br><small>${SUB[b][k].split(" ").slice(1).join(" ")} · ${r.l}/${r.n}</small><br><span class="stars">${"★".repeat(r.st)}${"☆".repeat(3-r.st)}</span></span></button>`;n++});
+const rk=RANK[Math.min(6,Math.floor((lvl()-1)/2))];
+$("app").innerHTML=`<div class="card"><div class="tag">твой ранг</div><div class="big">${rk}</div><p class="hint">Уровень ${lvl()} · ⭐ ${tst()} из ${STOPS.length*3} · 🏅 ${earned.size} из ${BD.length}</p>
+<div class="row"><button class="btn g" id="bkm">← К урокам</button></div></div>
+<h2 class="h2">🗺️ Дорога по Италии</h2><p class="hint" style="text-align:center">30% слов — ★, 60% — ★★, 90% — ★★★. Нажми на город, чтобы учить.</p><div class="road">${h}</div>
+<h2 class="h2">🏅 Награды</h2><div class="badges">${BD.map(b=>`<div class="bd ${earned.has(b[0])?"on":""}"><b>${earned.has(b[0])?b[1]:"🔒"}</b>${b[2]}<small>${b[3]}</small>${earned.has(b[0])?`<small>+${b[4]} XP</small>`:""}</div>`).join("")}</div>`;
+$("bkm").onclick=()=>{$("main").hidden=false;go()};
+document.querySelectorAll(".stop").forEach(e=>e.onclick=()=>{blk=e.dataset.b;sub=e.dataset.k;mode="cards";$("main").hidden=false;go()})}
+function head(){const lvl=Math.floor(xp/100)+1;$("lv").textContent="⭐ Ур. "+lvl;$("st").textContent="📚 "+learned.size+"/"+W.length;$("xb").style.width=(xp%100)+"%"}
+function add(n){xp+=n;save()}
+function nav(){
+$("blocks").innerHTML=Object.keys(BL).map(k=>{const t=W.filter(w=>w[2]==k),l=t.filter(w=>learned.has(w[0])).length;return `<button class="blk ${k==blk?"on":""}" data-b="${k}"><b>${BL[k][0]}</b>${BL[k][1]}<small>${l}/${t.length}</small></button>`}).join("");
+$("chips").innerHTML=`<button class="chip ${sub=="all"?"on":""}" data-c="all">Все (${blockW().length})</button>`+Object.keys(SUB[blk]).map(k=>`<button class="chip ${k==sub?"on":""}" data-c="${k}">${SUB[blk][k]}</button>`).join("");
+$("modes").innerHTML=[["cards","🃏","Карточки"],["quiz","🎯","Викторина"],["build","🔤","Собери слово"],["type","⌨️","Печатать"]].map(m=>`<button class="mode ${m[0]==mode?"on":""}" data-m="${m[0]}"><b>${m[1]}</b>${m[2]}</button>`).join("");
+$("blocks").onclick=e=>{const b=e.target.closest("[data-b]");if(b){blk=b.dataset.b;sub="all";go()}};
+$("chips").onclick=e=>{const c=e.target.dataset.c;if(c){sub=c;go()}};
+$("modes").onclick=e=>{const b=e.target.closest("[data-m]");if(b){mode=b.dataset.m;go()}}}
+function go(){nav();({cards,quiz,build,type:typeIt})[mode]()}
+function cards(){let q=sh(pool()),i=0,back=false;
+function draw(){if(i>=q.length){$("app").innerHTML=`<div class="card"><div class="end">🎉</div><div class="big">Brava!</div><p class="hint">Колода пройдена. Ещё раз?</p><div class="row"><button class="btn g" id="again">Заново</button></div></div>`;$("again").onclick=cards;return}
+const w=q[i];$("app").innerHTML=`<div class="top"><span>${i+1} / ${q.length}</span><span>${learned.has(w[0])?"✅ выучено":""}</span></div>
+<div class="card flip" id="f"><div class="tag">${back?"перевод":BL[blk][2]}</div><div class="big">${back?w[1]:w[0]}</div><div class="hint">${back?"":"нажми, чтобы перевернуть"}</div></div>
+<div class="row"><button class="btn r" id="no">Ещё раз</button><button class="btn g" id="yes">Знаю!</button></div>`;
+$("f").onclick=()=>{back=!back;draw()};
+$("yes").onclick=()=>{learned.add(w[0]);add(5);i++;back=false;draw()};
+$("no").onclick=()=>{q.push(q.splice(i,1)[0]);back=false;draw()}}
+draw()}
+function quiz(){const p=pool();const src=p.length>=4?p:blockW();
+let q=sh(p).slice(0,10),i=0,score=0,streak=0;
+function draw(){if(i>=q.length){$("app").innerHTML=`<div class="card"><div class="end">${score>=8?"🏆":"👍"}</div><div class="big">${score} / ${q.length}</div><p class="hint">Правильных ответов</p><div class="row"><button class="btn g" id="again">Ещё раунд</button></div></div>`;$("again").onclick=quiz;return}
+const w=q[i],rev=Math.random()<.4,k=rev?1:0,a=rev?0:1;
+const o=sh([w,...sh(src.filter(x=>x!==w)).slice(0,3)]);
+$("app").innerHTML=`<div class="top"><span>${i+1} / ${q.length}</span><span>🔥 серия ${streak}</span></div>
+<div class="card"><div class="tag">${rev?"как по-итальянски?":"что значит?"}</div><div class="big">${w[k]}</div>
+<div class="opts">${o.map((x,n)=>`<button class="opt" data-n="${n}">${x[a]}</button>`).join("")}</div><div class="fb" id="fb"></div></div>`;
+document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const x=o[+b.dataset.n],ok=x===w;
+document.querySelectorAll(".opt").forEach(z=>{z.disabled=true;if(o[+z.dataset.n]===w)z.classList.add("ok")});
+if(ok){score++;streak++;learned.add(w[0]);add(10+Math.min(streak,5));$("fb").textContent="Perfetto! ✨"}else{streak=0;b.classList.add("no","shake");$("fb").textContent="Правильно: "+w[a]}
+setTimeout(()=>{i++;draw()},ok?700:1500)})}
+draw()}
+function build(){const p=pool().filter(w=>/^[a-zàèéìòù]+$/i.test(w[0])&&w[0].length>2);
+if(!p.length){$("app").innerHTML=`<div class="card">В этой категории нет подходящих слов.</div>`;return}
+let q=sh(p),i=0;
+function draw(){const w=q[i%q.length],t=w[0].toLowerCase();let ans=[];const L=sh(t.split("").map((c,n)=>({c,n})));
+function r(){$("app").innerHTML=`<div class="card"><div class="tag">собери слово</div><div class="big" style="font-size:30px">${w[1]}</div>
+<div class="slots" id="sl">${t.split("").map((_,n)=>`<div class="slot">${ans[n]?ans[n].c:""}</div>`).join("")}</div>
+<div class="letters">${L.map(l=>`<button class="let" data-n="${l.n}" ${ans.includes(l)?"disabled":""}>${l.c}</button>`).join("")}</div>
+<div class="row"><button class="btn d" id="bk">⌫ Стереть</button><button class="btn r" id="sk">Пропустить</button></div><div class="fb" id="fb"></div></div>`;
+document.querySelectorAll(".let").forEach(b=>b.onclick=()=>{ans.push(L.find(l=>l.n==b.dataset.n));
+if(ans.length==t.length){const ok=ans.map(a=>a.c).join("")==t;r();
+if(ok){$("fb").textContent="Bravo! "+w[0]+" ✨";learned.add(w[0]);add(15);setTimeout(()=>{i++;draw()},900)}
+else{$("sl").classList.add("shake");$("fb").textContent="Почти! Попробуй ещё";ans=[];setTimeout(r,700)}}else r()});
+$("bk").onclick=()=>{ans.pop();r()};$("sk").onclick=()=>{i++;draw()}}
+r()}
+draw()}
+function typeIt(){const p=pool();let q=sh(p),i=0,streak=0;
+const nm=t=>t.toLowerCase().replace(/[.!?,]/g,"").replace(/\s+/g," ").trim();
+const st=t=>nm(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function draw(){const w=q[i%q.length];let hints=0,done=false;
+$("app").innerHTML=`<div class="top"><span>Слово ${i+1}</span><span>🔥 серия ${streak}</span></div>
+<div class="card"><div class="tag">напиши по-итальянски · ${BL[w[2]][2]}</div><div class="big" style="font-size:clamp(24px,7vw,36px)">${w[1]}</div>
+<input class="inp" id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="…">
+<div class="kb">${["à","è","é","ì","ò","ù"].map(c=>`<button data-k="${c}">${c}</button>`).join("")}</div>
+<div class="row"><button class="btn d" id="hn">💡 Подсказка</button><button class="btn g" id="ck">Проверить</button></div><div class="fb" id="fb"></div></div>`;
+const inp=$("in");inp.focus();
+document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{inp.value+=b.dataset.k;inp.focus()});
+$("hn").onclick=()=>{if(done)return;hints++;$("fb").textContent="Начинается на: "+w[0].slice(0,hints)+"…  ("+w[0].length+" симв.)"};
+function next(){i++;draw()}
+function check(){if(done){next();return}const v=inp.value;if(!v.trim())return;
+const ok=nm(v)==nm(w[0]),near=!ok&&st(v)==st(w[0]);done=true;
+if(ok||near){streak++;learned.add(w[0]);add(Math.max(5,20-5*hints)+(near?-3:0));inp.disabled=true;
+$("fb").innerHTML=(near?"Почти! Ударения: <b>"+w[0]+"</b>":"Perfetto! ✨")+" ";setTimeout(next,near?1500:800)}
+else{streak=0;inp.classList.add("shake");$("fb").innerHTML="Правильно: <b>"+w[0]+"</b>";$("ck").textContent="Дальше →";inp.disabled=true}}
+$("ck").onclick=check;inp.onkeydown=e=>{if(e.key=="Enter")check()}}
+draw()}
+function login(a){cur=a;ls("p_cur",a.n);let d={};try{d=JSON.parse(ls("p_d_"+a.n)||"{}")}catch(e){}
+xp=d.xp||0;learned=new Set(d.l||[]);earned=new Set(d.b||[]);$("mp").hidden=false;$("who").textContent=a.e+" "+a.n;$("who").hidden=false;$("main").hidden=false;head();go()}
+function logout(){cur=null;ls("p_cur","");$("who").hidden=true;$("mp").hidden=true;$("main").hidden=true;$("lv").textContent="";$("st").textContent="";auth()}
+const tabs=t=>`<div class="tabs"><button class="tab ${t=="in"?"on":""}" id="t1">Войти</button><button class="tab ${t=="up"?"on":""}" id="t2">Создать аккаунт</button></div>`;
+const wire=()=>{$("t1").onclick=()=>auth("mail");$("t2").onclick=()=>auth("new")};
+function auth(sel){$("main").hidden=true;if(sel===undefined)sel=accs.length?"mail":"new";
+const mailOk=m=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
+if(sel==="new"||(!accs.length&&sel===undefined)){let em=EM[0];
+$("app").innerHTML=`<div class="card"><div class="big" style="font-size:30px">Benvenuto! 👋</div>${tabs("up")}<p class="hint">Прогресс сохранится на этом устройстве.</p>
+<input class="inp" id="ml" type="email" autocomplete="email" placeholder="Электронная почта" style="font-size:16px">
+<input class="inp" id="nm" maxlength="16" placeholder="Как тебя зовут?" autocomplete="off" style="font-size:16px">
+<input class="inp" id="pw" type="password" autocomplete="new-password" placeholder="Пароль (от 6 символов)" style="font-size:16px">
+<div class="emos">${EM.map(e=>`<button class="emo ${e==em?"on":""}" data-e="${e}">${e}</button>`).join("")}</div>
+<div class="err" id="er"></div><div class="row"><button class="btn g" id="ok">Создать аккаунт</button></div></div>`;
+document.querySelectorAll(".emo").forEach(b=>b.onclick=()=>{em=b.dataset.e;document.querySelectorAll(".emo").forEach(x=>x.classList.toggle("on",x===b))});
+wire();
+$("ok").onclick=()=>{const m=$("ml").value.trim().toLowerCase(),n=$("nm").value.trim(),pw=$("pw").value;
+if(!mailOk(m))return $("er").textContent="Проверь адрес почты";
+if(!n)return $("er").textContent="Введи имя";
+if(pw.length<6)return $("er").textContent="Пароль — минимум 6 символов";
+if(accs.some(a=>(a.m||"")==m))return $("er").textContent="Аккаунт с такой почтой уже есть";
+if(accs.some(a=>a.n.toLowerCase()==n.toLowerCase()))return $("er").textContent="Такое имя уже занято";
+const a={n,m,e:em,p:hsh(pw+n)};accs.push(a);ls("p_accs",JSON.stringify(accs));login(a)};return}
+if(sel==="mail"){
+$("app").innerHTML=`<div class="card"><div class="big" style="font-size:30px">Бон-джорно! ✉️</div>${tabs("in")}
+<input class="inp" id="ml" type="email" placeholder="Электронная почта" style="font-size:16px"><input class="inp" id="pw" type="password" placeholder="Пароль" style="font-size:16px">
+<div class="err" id="er"></div><div class="row"><button class="btn g" id="ok">Войти</button></div>${accs.length?'<p class="hint" style="margin-top:18px">Быстрый вход на этом устройстве</p><div class="emos">'+accs.map((a,i)=>`<button class="opt" data-i="${i}">${a.e} ${a.n}${a.p?" 🔒":""}</button>`).join("")+"</div>":""}</div>`;
+wire();document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const a=accs[+b.dataset.i];a.p?auth(a):login(a)});
+$("ok").onclick=()=>{const m=$("ml").value.trim().toLowerCase(),a=accs.find(x=>x.m==m);
+if(!a||hsh($("pw").value+a.n)!=a.p)return $("er").textContent="Неверная почта или пароль";login(a)};
+$("pw").onkeydown=e=>{if(e.key=="Enter")$("ok").click()};return}
+if(sel===undefined){$("app").innerHTML=`<div class="card"><div class="big" style="font-size:30px">Chi sei? 🇮🇹</div><p class="hint">Выбери аккаунт на этом устройстве.</p>
+<div class="opts">${accs.map((a,i)=>`<button class="opt" data-i="${i}">${a.e} ${a.n}${a.p?" 🔒":""}</button>`).join("")}<button class="btn g" id="nw">＋ Создать аккаунт</button><button class="btn d" id="ml">✉️ Войти по почте</button></div></div>`;
+document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const a=accs[+b.dataset.i];a.p?auth(a):login(a)});
+$("nw").onclick=()=>auth("new");$("ml").onclick=()=>auth("mail");return}
+const a=sel;let del=false;
+$("app").innerHTML=`<div class="card"><div class="big">${a.e} ${a.n}</div><p class="hint">${a.m||""}<br>Введи пароль, чтобы войти</p>
+<input class="inp" id="pn" type="password" placeholder="Пароль" style="font-size:16px"><div class="err" id="er"></div>
+<div class="row"><button class="btn d" id="bk">Назад</button><button class="btn g" id="ok">Войти</button></div><button class="lnk" id="dl">Удалить аккаунт</button></div>`;
+const okp=()=>hsh($("pn").value+a.n)==a.p;
+$("bk").onclick=()=>auth();$("pn").focus();
+$("ok").onclick=()=>okp()?login(a):$("er").textContent="Неверный пароль";
+$("pn").onkeydown=e=>{if(e.key=="Enter")$("ok").click()};
+$("dl").onclick=()=>{if(!okp())return $("er").textContent="Для удаления введи верный пароль";
+if(!del){del=true;$("dl").textContent="Точно удалить? Нажми ещё раз";return}
+accs=accs.filter(x=>x!==a);ls("p_accs",JSON.stringify(accs));ls("p_d_"+a.n,"");auth()}}
+$("th").onclick=()=>{const d=document.documentElement,dk=getComputedStyle(d).getPropertyValue("--bg").trim()=="#1c1712";d.dataset.theme=dk?"light":"dark"};
+$("who").onclick=logout;$("mp").onclick=mapView;
+{const a=accs.find(x=>x.n==ls("p_cur"));a&&!a.p?login(a):auth()}
+</script></body></html>
